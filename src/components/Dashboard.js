@@ -1,16 +1,40 @@
 import React, { Component } from "react";
 
 import Loading from './Loading';
+import Panel from './Panel';
 
 // import React from "react";
 import classnames from "classnames";
+
+const data = [
+  {
+    id: 1,
+    label: "Total Photos",
+    value: 10
+  },
+  {
+    id: 2,
+    label: "Total Topics",
+    value: 4
+  },
+  {
+    id: 3,
+    label: "User with the most uploads",
+    value: "Allison Saeng"
+  },
+  {
+    id: 4,
+    label: "User with the least uploads",
+    value: 'Lukas Souza'
+  }
+];
 
 
 class Dashboard extends Component {
   //It should default to true because the application will start loading data immediately after the components render for the first time
   
   state = {
-    loading: true
+    loading: false // false simply disables the loading screen
   };
 
   render() {
@@ -21,7 +45,18 @@ class Dashboard extends Component {
       return <Loading />;
     }
 
-    return <main className={dashboardClasses} />;
+ 
+    const panels = data.map(panel => (
+      <Panel
+        key={panel.id}
+        id={panel.id}
+        label={panel.label}
+        value={panel.value}
+      />
+    ));
+ 
+ 
+    return <main className={dashboardClasses}>{panels}</main>;
   }
 }
 export default Dashboard;
