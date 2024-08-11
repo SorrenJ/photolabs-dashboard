@@ -51,7 +51,19 @@ If this.state.focused is equal to the Panel, then let it through the filter.*/
     }));
   }
   
+  componentDidMount() {
+    const focused = JSON.parse(localStorage.getItem("focused"));
 
+    if (focused) {
+      this.setState({ focused });
+    }
+  }
+
+  componentDidUpdate(previousProps, previousState) {
+    if (previousState.focused !== this.state.focused) {
+      localStorage.setItem("focused", JSON.stringify(this.state.focused));
+    }
+  }
 
 
   render() {
