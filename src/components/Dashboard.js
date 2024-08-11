@@ -44,11 +44,12 @@ If this.state.focused is equal to the Panel, then let it through the filter.*/
   };
 
 
+// Change the selectPanel function to set the value of focused back to null if the value of focused is currently set to a panel.
   selectPanel(id) {
-    this.setState({
-     focused: id
-    });
-   }
+    this.setState(previousState => ({
+      focused: previousState.focused !== null ? null : id
+    }));
+  }
   
 
 
@@ -69,11 +70,10 @@ If this.state.focused is equal to the Panel, then let it through the filter.*/
     const panels = (this.state.focused ? data.filter(panel => this.state.focused === panel.id) : data)
     .map(panel => (
      <Panel
-      key={panel.id}
-      id={panel.id}
-      label={panel.label}
-      value={panel.value}
-      onSelect={this.selectPanel}
+     key={panel.id}
+     label={panel.label}
+     value={panel.value}
+     onSelect={event => this.selectPanel(panel.id)}
      />
     ));
  
