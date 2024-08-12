@@ -6,27 +6,36 @@ import Panel from './Panel';
 // import React from "react";
 import classnames from "classnames";
 
+import {
+  getTotalPhotos,
+  getTotalTopics,
+  getUserWithMostUploads,
+  getUserWithLeastUploads
+ } from "helpers/selectors";
+
+
 const data = [
   {
     id: 1,
     label: "Total Photos",
-    value: 10
+    getValue: getTotalPhotos
   },
   {
     id: 2,
     label: "Total Topics",
-    value: 4
+    getValue: getTotalTopics
   },
   {
     id: 3,
     label: "User with the most uploads",
-    value: "Allison Saeng"
+    getValue: getUserWithMostUploads
   },
   {
     id: 4,
     label: "User with the least uploads",
-    value: 'Lukas Souza'
+    getValue: getUserWithLeastUploads
   }
+
 ];
 
 
@@ -34,14 +43,18 @@ class Dashboard extends Component {
   //It should default to true because the application will start loading data immediately after the components render for the first time
   
   state = {
-    loading: false, // false simply disables the loading screen
+    loading: true, // false simply disables the loading screen
    
    
-    focused: null // When we are in focused mode, we don't want to render four panels; we want to render one
+    focused: null, // When we are in focused mode, we don't want to render four panels; we want to render one
   /* If this.state.focused is null then return true for every panel.
 If this.state.focused is equal to the Panel, then let it through the filter.*/
   
-  };
+photos: [],
+topics: []
+
+
+};
 
 
 // Change the selectPanel function to set the value of focused back to null if the value of focused is currently set to a panel.
@@ -54,9 +67,29 @@ If this.state.focused is equal to the Panel, then let it through the filter.*/
   componentDidMount() {
     const focused = JSON.parse(localStorage.getItem("focused"));
 
+    const urlsPromise = [
+      "/api/photos",
+      "/api/topics",
+    ].map(url => fetch(url).then(response => response.json()));
+  
+  
     if (focused) {
       this.setState({ focused });
     }
+  
+
+
+    Promise.all(urlsPromise)
+    .then(([photos, topics]) => {
+      this.setState({
+        loading: false,
+        photos: photos,
+        topics: topics
+      });
+    });
+
+
+
   }
 
   componentDidUpdate(previousProps, previousState) {
@@ -81,11 +114,11 @@ If this.state.focused is equal to the Panel, then let it through the filter.*/
     // Use the this.state.focused value to filter panel data before converting it to components.
     const panels = (this.state.focused ? data.filter(panel => this.state.focused === panel.id) : data)
     .map(panel => (
-     <Panel
-     key={panel.id}
-     label={panel.label}
-     value={panel.value}
-     onSelect={event => this.selectPanel(panel.id)}
+      <Panel
+      key={panel.id}
+      label={panel.label}
+      value={panel.getValue(this.state)}
+      onSelect={() => this.selectPanel(panel.id)}
      />
     ));
  
